@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#050b12">
+<title>TAP VOLT</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:
+ radial-gradient(ellipse at 50% 20%,#123c35 0%,#08151b 42%,#04080e 100%);
+ color:#fff;font-family:Arial,sans-serif;
+ min-height:100vh;text-align:center;
+}
+.app{max-width:440px;margin:auto;padding:25px 20px 35px}
+header{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:23px;font-weight:900;letter-spacing:4px;color:#6bffc0}
+.tag{font-size:10px;color:#8ba9a0;border:1px solid #315c50;padding:7px 12px;border-radius:20px}
+h2{font-size:13px;font-weight:400;color:#91aaa2;letter-spacing:3px;margin-top:35px}
+.balance{font-size:49px;font-weight:900;color:#72ffc2;text-shadow:0 0 25px #24ffae55;margin:12px 0 3px}
+.unit{font-size:12px;letter-spacing:5px;color:#86a89b}
+.stats{display:flex;gap:10px;margin:25px 0}
+.stat{flex:1;padding:15px 8px;background:#ffffff09;border:1px solid #ffffff15;border-radius:16px}
+.stat strong{display:block;font-size:19px;color:#8affcb;margin-bottom:5px}
+.stat span{font-size:10px;color:#829b93;letter-spacing:1px}
+.energy-title{display:flex;justify-content:space-between;color:#9bb5ab;font-size:12px;margin:25px 3px 9px}
+.bar{height:9px;background:#18332d;border-radius:20px;overflow:hidden}
+.fill{height:100%;width:100%;background:linear-gradient(90deg,#19d68b,#a0ffd0);border-radius:20px;transition:width .2s}
+.tap-area{height:270px;display:flex;align-items:center;justify-content:center;position:relative}
+.tap{
+ width:205px;height:205px;border-radius:50%;
+ border:2px solid #79ffbe;
+ background:radial-gradient(circle at 40% 30%,#5affb7,#079a68 48%,#064c3d 100%);
+ box-shadow:0 0 25px #24ffae55,0 0 75px #24ffae22,inset 0 0 30px #ffffff33;
+ font-size:95px;color:#fff;
+ text-shadow:0 0 25px white;
+ cursor:pointer;transition:transform .1s;
+}
+.tap:active{transform:scale(.92)}
+.hint{font-size:11px;color:#73988a;letter-spacing:3px;margin-top:-12px}
+.section-title{text-align:left;font-size:15px;letter-spacing:2px;margin:30px 0 12px;color:#b9e8d4}
+.upgrade{
+ display:flex;justify-content:space-between;align-items:center;
+ background:linear-gradient(110deg,#16372e,#10211f);
+ border:1px solid #3a725d;border-radius:15px;
+ padding:16px;margin-bottom:10px;text-align:left;
+}
+.upgrade b{font-size:13px}
+.upgrade small{display:block;color:#8ba99c;margin-top:5px;font-size:11px}
+.buy{background:#43eaa2;color:#062016;border:0;border-radius:10px;padding:11px 13px;font-weight:bold}
+.nav{display:flex;justify-content:space-around;margin-top:30px;padding:17px 5px;background:#ffffff09;border:1px solid #ffffff15;border-radius:17px}
+.nav span{font-size:11px;color:#a0b9ad}
+.note{font-size:10px;color:#5e8173;margin-top:20px}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="logo">⚡ VOLT</div>
+ <div class="tag">● ONLINE GAME</div>
+</header>
+
+<h2>YOUR ENERGY</h2>
+<div class="balance" id="balance">0</div>
+<div class="unit">V O L T</div>
+
+<div class="stats">
+ <div class="stat"><strong id="power">1</strong><span>POWER / TAP</span></div>
+ <div class="stat"><strong id="level">1</strong><span>LEVEL</span></div>
+</div>
+
+<div class="energy-title">
+ <span>⚡ ENERGY</span>
+ <span id="energyText">1000 / 1000</span>
+</div>
+<div class="bar"><div class="fill" id="energyBar"></div></div>
+
+<div class="tap-area">
+ <button class="tap" id="tap">ϟ</button>
+</div>
+<div class="hint">TAP TO GENERATE VOLT</div>
+
+<div class="section-title">UPGRADE CENTER</div>
+<div class="upgrade">
+ <div><b>⚡ POWER BOOST</b><small>Увеличивает силу нажатия</small></div>
+ <button class="buy" id="upgrade">100 VOLT</button>
+</div>
+
+<div class="nav">
+ <span>⚡<br>GAME</span>
+ <span>🚀<br>UPGRADE</span>
+ <span>🏆<br>RANK</span>
+ <span>🎁<br>BONUS</span>
+</div>
+
+<div class="note">TAP VOLT © 2026 • POWER YOUR GAME</div>
+</div>
+
+<script>
+let balance=Number(localStorage.getItem("volt_balance"))||0;
+let energy=Number(localStorage.getItem("volt_energy"));
+if(!Number.isFinite(energy)) energy=1000;
+let power=Number(localStorage.getItem("volt_power"))||1;
+energy=Math.min(1000,energy);
+
+const $=id=>document.getElementById(id);
+
+function render(){
+ $("balance").textContent=balance.toLocaleString("en-US");
+ $("energyText").textContent=energy+" / 1000";
+ $("energyBar").style.width=(energy/10)+"%";
+ $("power").textContent=power;
+ $("level").textContent=power;
+ $("upgrade").textContent=(power*100)+" VOLT";
+}
+function save(){
+ localStorage.setItem("volt_balance",balance);
+ localStorage.setItem("volt_energy",energy);
+ localStorage.setItem("volt_power",power);
+ render();
+}
+$("tap").onclick=()=>{
+ if(energy<power)return;
+ balance+=power;
+ energy-=power;
+ save();
+};
+$("upgrade").onclick=()=>{
+ let price=power*100;
+ if(balance<price){
+  alert("Недостаточно VOLT! Продолжай нажимать на молнию.");
+  return;
+ }
+ balance-=price;
+ power++;
+ save();
+};
+setInterval(()=>{
+ if(energy<1000){
+  energy=Math.min(1000,energy+2);
+  save();
+ }
+},1000);
+render();
+</script>
+</body>
+</html>
